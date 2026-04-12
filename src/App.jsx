@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { doc, updateDoc, increment } from "firebase/firestore";
+import { doc, updateDoc, increment, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 import caioImg from './assets/caio.jpg';
 import maiteImg from './assets/maite.png';
 import yalueImg from './assets/yalue.jpeg';
@@ -17,7 +18,7 @@ function App() {
 
   const [anoAtual, setAnoAtual] = useState(data.getFullYear());
 
-  const [diasNoMes, setDiasNoMes] = useState(new Date(anoAtual, mesAtual + 1, 0).getDate());
+  const diasNoMes = new Date(anoAtual, mesAtual + 1, 0).getDate();
 
   const meses = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -25,18 +26,26 @@ function App() {
   ];
 
   const treinar = async (id, btn) => {
+
+    const participante = participantes.find(p => p.id === id);
+
+    if (!participante)
+      return;
+
+    const atual = Number(participante.treinos);
+
+    if (btn === '+' && atual >= diasNoMes)
+      return;
+
+    if (btn === '-' && atual <= 0)
+      return;
+
     const ref = doc(db, "participantes", id);
 
-    if (btn === '+') {
-      await updateDoc(ref, {
-        treinos: increment(1)
-      });
-    }
-    else {
-      await updateDoc(ref, {
-        treinos: increment(-1)
-      });
-    }
+    await updateDoc(ref, {
+      treinos: increment(btn === '+' ? 1 : -1),
+      ...(btn === '+' && { dataTreino: serverTimestamp() })
+    })
 
     // recarrega dados
     const querySnapshot = await getDocs(collection(db, "participantes"));
@@ -49,23 +58,32 @@ function App() {
   }
 
   useEffect(() => {
-    const carregar = async () => {
-      const querySnapshot = await getDocs(collection(db, "participantes"));
+    const unsubscribe = onSnapshot(
+      collection(db, "participantes"),
+      (snapshot) => {
+        const lista = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
 
-      const lista = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+        setParticipantes(lista);
+      }
+    );
 
-      setParticipantes(lista);
-    }
-
-    carregar();
+    return () => unsubscribe();
   }, []);
 
   const ranking = Array.isArray(participantes)
-  ? [...participantes].sort((a, b) => Number(b.treinos) - Number(a.treinos))
-  : [];
+    ? [...participantes].sort((a, b) => Number(b.treinos) - Number(a.treinos))
+    : [];
+
+  const getParticipante = (id) => {
+    return participantes.find(p => p.id === id);
+  };
+
+  const caio = getParticipante("caio");
+  const maite = getParticipante("maitê");
+  const yalue = getParticipante("yaluê");
 
   return (
     <>
@@ -105,10 +123,12 @@ function App() {
                     <p className="card-text">Caio</p>
                     <div className="d-flex justify-content-between align-items-center">
                       <div className='btn-group'>
-                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("caio", '+')}>+1</button>
-                        <button className='btn btn-outline-secondary' onClick={() => treinar("caio", '-')}>-1</button>
+                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("caio", '+')} disabled={caio?.treinos >= diasNoMes}>+1</button>
+                        <button className='btn btn-outline-secondary' onClick={() => treinar("caio", '-')} disabled={caio?.treinos <= 0}>-1</button>
                       </div>
-                      <small className="text-body-secondary">9 mins</small> {/**Aqui você pode colocar a hora e dia que ele apertou */}
+                      <p className="text-body-secondary">{caio?.dataTreino
+                        ? new Date(caio.dataTreino.seconds * 1000).toLocaleString()
+                        : ""}</p> {/**Aqui você pode colocar a hora e dia que ele apertou */}
                     </div>
                   </div>
                 </div>
@@ -120,11 +140,12 @@ function App() {
                     <p className="card-text">Maitê</p>
                     <div className="d-flex justify-content-between align-items-center">
                       <div className='btn-group'>
-                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("maitê", '+')}>+1</button>
-                        <button className='btn btn-outline-secondary' onClick={() => treinar("maitê", '-')}>-1</button>
+                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("maitê", '+')} disabled={maite?.treinos >= diasNoMes}>+1</button>
+                        <button className='btn btn-outline-secondary' onClick={() => treinar("maitê", '-')} disabled={maite?.treinos <= 0}>-1</button>
                       </div>
-                      <small className="text-body-secondary">9 mins</small>
-                    </div>
+                      <p className="text-body-secondary">{maite?.dataTreino
+                        ? new Date(maite.dataTreino.seconds * 1000).toLocaleString()
+                        : ""}</p>                    </div>
                   </div>
                 </div>
               </div>
@@ -135,11 +156,12 @@ function App() {
                     <p className="card-text">Yaluê</p>
                     <div className="d-flex justify-content-between align-items-center">
                       <div className='btn-group'>
-                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("yaluê", '+')}>+1</button>
-                        <button className='btn btn-outline-secondary' onClick={() => treinar("yaluê", '-')}>-1</button>
+                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("yaluê", '+')} disabled={yalue?.treinos >= diasNoMes}>+1</button>
+                        <button className='btn btn-outline-secondary' onClick={() => treinar("yaluê", '-')} disabled={yalue?.treinos <= 0}>-1</button>
                       </div>
-                      <small className="text-body-secondary">{participantes.treinos}</small>
-                    </div>
+                      <p className="text-body-secondary">{yalue?.dataTreino
+                        ? new Date(yalue.dataTreino.seconds * 1000).toLocaleString()
+                        : ""}</p>                    </div>
                   </div>
                 </div>
               </div>
