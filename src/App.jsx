@@ -8,9 +8,6 @@ import yalueImg from './assets/yalue.jpeg';
 import './App.css'
 
 function App() {
-  const [countC, setCountC] = useState(0);
-  const [countM, setCountM] = useState(0);
-  const [countY, setCountY] = useState(0);
 
   const [data, setData] = useState(new Date());
 
@@ -20,16 +17,18 @@ function App() {
 
   const [anoAtual, setAnoAtual] = useState(data.getFullYear());
 
+  const [diasNoMes, setDiasNoMes] = useState(new Date(anoAtual, mesAtual + 1, 0).getDate());
+
   const meses = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
 
-  async function treinar(id, btn) {
+  const treinar = async (id, btn) => {
     const ref = doc(db, "participantes", id);
 
     if (btn === '+') {
-          await updateDoc(ref, {
+      await updateDoc(ref, {
         treinos: increment(1)
       });
     }
@@ -38,7 +37,6 @@ function App() {
         treinos: increment(-1)
       });
     }
-    
 
     // recarrega dados
     const querySnapshot = await getDocs(collection(db, "participantes"));
@@ -51,7 +49,7 @@ function App() {
   }
 
   useEffect(() => {
-    async function carregar() {
+    const carregar = async () => {
       const querySnapshot = await getDocs(collection(db, "participantes"));
 
       const lista = querySnapshot.docs.map(doc => ({
@@ -64,6 +62,10 @@ function App() {
 
     carregar();
   }, []);
+
+  const ranking = Array.isArray(participantes)
+  ? [...participantes].sort((a, b) => Number(b.treinos) - Number(a.treinos))
+  : [];
 
   return (
     <>
@@ -84,7 +86,7 @@ function App() {
           <div className='row py-lg-5'>
             <div className='col-lg-6 col-md-8 mx-auto'>
               <h1 className='fw-light'>Couple Fitness + 1</h1>
-              <p className='lead text-body-secondary'>Sistema oficial anti-migué da academia 💪😂 Aqui não tem ‘vou amanhã’ nem ‘tô focado’ sem prova — ou registrou, ou não treinou! De quebra, ainda rola aquela competição saudável pra ver quem tá monstro e quem tá só pagando mensalidade</p>
+              <p className='lead text-body-secondary'>Sistema oficial anti-migué da academia 💪😂 Aqui não tem "vou amanhã" nem "tô focado" sem prova — ou registrou, ou não treinou! De quebra, ainda rola aquela competição saudável pra ver quem tá monstro e quem tá só pagando mensalidade</p>
               <p>
                 <a href="#competidores" className="btn btn-primary my-2">Competidores</a> <a href="#progresso" className="btn btn-secondary my-2">Progresso</a>
               </p>
@@ -136,7 +138,7 @@ function App() {
                         <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("yaluê", '+')}>+1</button>
                         <button className='btn btn-outline-secondary' onClick={() => treinar("yaluê", '-')}>-1</button>
                       </div>
-                      <small className="text-body-secondary">9 mins</small>
+                      <small className="text-body-secondary">{participantes.treinos}</small>
                     </div>
                   </div>
                 </div>
@@ -149,22 +151,31 @@ function App() {
           <div className='p-5 text-center bg-body-tertiary rounded-3'>
             <h1 className='text-body-emphasis'>Progresso</h1>
             <br />
-            {participantes.map(p => (
-              <div key={p.id}>
-                <p>{p.nome}</p>
+            {
+              ranking.map((p, index) => {
+                const porcentagem = Math.min((p.treinos / diasNoMes) * 100, 100);
 
-                <div className="progress">
-                  <div
-                    className="progress-bar progress-bar-striped progress-bar-animated"
-                    style={{ width: `${p.treinos}%` }}
-                  >
-                    {p.treinos}%
+                return (
+                  <div key={p.id}>
+                    <p>
+                      {p.nome}
+                      {index === 0 && " 👑"} {/* coroa pro primeiro */}
+                      {index === 2 && " 🗑️"}
+                    </p>
+
+                    <div className="progress">
+                      <div
+                        className="progress-bar progress-bar-striped progress-bar-animated"
+                        style={{ width: `${porcentagem}%` }}
+                      >
+                        {p.treinos}/{diasNoMes}
+                      </div>
+                    </div>
+                    <br />
                   </div>
-                </div>
-
-                <br />
-              </div>
-            ))}
+                );
+              })
+            }
           </div>
         </div>
       </main>

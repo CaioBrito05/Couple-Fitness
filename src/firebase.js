@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-// (analytics é opcional, pode remover se quiser)
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
