@@ -20,8 +20,6 @@ O Contador de Academia foi desenvolvido com o objetivo de facilitar a contagem d
 
 # 📸 Preview
 
-(Adicione aqui prints do seu projeto depois 👇)
-
 ![Print1](./public/Print1.png)
 ![Print2](./public/Print2.png)
 
