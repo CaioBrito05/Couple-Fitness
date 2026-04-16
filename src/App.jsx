@@ -7,6 +7,7 @@ import caioImg from './assets/caio.jpg';
 import maiteImg from './assets/maite.png';
 import yalueImg from './assets/yalue.jpeg';
 import './App.css'
+import { arrayLastIndexOf } from 'firebase/firestore/pipelines';
 
 function App() {
 
@@ -40,7 +41,7 @@ function App() {
     if (btn === '-' && atual <= 0)
       return;
 
-    const ref = doc(db, "participantes", id);
+    const ref = doc(db, "participantes_dev", id);
 
     await updateDoc(ref, {
       treinos: increment(btn === '+' ? 1 : -1),
@@ -48,7 +49,7 @@ function App() {
     })
 
     // recarrega dados
-    const querySnapshot = await getDocs(collection(db, "participantes"));
+    const querySnapshot = await getDocs(collection(db, "participantes_dev"));
     const lista = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -59,7 +60,7 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      collection(db, "participantes"),
+      collection(db, "participantes_dev"),
       (snapshot) => {
         const lista = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -182,7 +183,7 @@ function App() {
                     <p>
                       {p.nome}
                       {index === 0 && " 👑"} {/* coroa pro primeiro */}
-                      {index === 2 && " 🗑️"}
+                      {index === 3 && " 🗑️"}
                     </p>
 
                     <div className="progress">
