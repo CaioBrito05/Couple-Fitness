@@ -69,7 +69,7 @@ function Home() {
       }
     );
 
-    
+
     return () => unsubscribe();
   }, []);
 
@@ -103,7 +103,7 @@ function Home() {
                   return (
                     <div className="col" key={p.id}>
                       <div className="card shadow-sm">
-                        <img src={`/public/${p.nome}.jpg`} alt={p.nome} className="card-img-top object-fit-cover" />
+                        <img src={`/${p.nome}.jpg`} alt={p.nome} className="card-img-top object-fit-cover" />
                         <div className="card-body">
                           <p className="card-text">{p.nome}</p>
                           <div className="d-flex justify-content-between align-items-center">
