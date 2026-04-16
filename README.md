@@ -1,16 +1,42 @@
-# React + Vite
+🏋️‍♂️ Contador de Academia
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Um projeto simples, moderno e funcional para acompanhar o progresso de treinos na academia — ideal para quem quer registrar quantas vezes foi na academia de forma prática e visual.
 
-Currently, two official plugins are available:
+🚀 Sobre o Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O Contador de Academia foi desenvolvido com o objetivo de facilitar a contagem de treinos, uma competição saudável entre amigos. Com uma interface intuitiva e responsiva, o usuário pode incrementar ou decrementar contadores rapidamente, sem complicação.
 
-## React Compiler
+🛠️ Tecnologias Utilizadas
+⚛️ React
+⚡ Vite
+🎨 Bootstrap
+🔥 Firebase (para persistência de dados, se aplicável)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+✨ Funcionalidades
+➕ Incremento de contadores
+➖ Decremento de contadores
+💾 Armazenamento de dados
+📱 Interface responsiva
 
-## Expanding the ESLint configuration
+📸 Preview
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+(Adicione aqui prints do seu projeto depois 👇)
+
+![Print1](./public/Print1.png)
+![Print2](./public/Print2.png)
+
+📌 Próximas Melhorias
+
+- Sistema de login
+
+- Histórico de treinos
+
+- Ranking todo mês
+
+- Gráficos de evolução
+
+💪 Motivação
+
+"O progresso acontece um treino de cada vez."
+
+Feito com dedicação para evoluir sempre 🚀
