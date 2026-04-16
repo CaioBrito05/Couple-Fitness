@@ -3,11 +3,7 @@ import { doc, updateDoc, increment, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
-import caioImg from './assets/caio.jpg';
-import maiteImg from './assets/maite.png';
-import yalueImg from './assets/yalue.jpeg';
 import './App.css'
-import { arrayLastIndexOf } from 'firebase/firestore/pipelines';
 
 function App() {
 
@@ -78,14 +74,6 @@ function App() {
     ? [...participantes].sort((a, b) => Number(b.treinos) - Number(a.treinos))
     : [];
 
-  const getParticipante = (id) => {
-    return participantes.find(p => p.id === id);
-  };
-
-  const caio = getParticipante("caio");
-  const maite = getParticipante("maitê");
-  const yalue = getParticipante("yaluê");
-
   return (
     <>
       <header>
@@ -117,55 +105,31 @@ function App() {
           <div className='container' >
             <p className='lead text-body-secondary'>Edição mês de <strong>{meses[mesAtual]}</strong></p>
             <div className='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3'>
-              <div className="col">
-                <div className="card shadow-sm">
-                  <img src={caioImg} alt="Caio" className="card-img-top object-fit-cover" />
-                  <div className="card-body">
-                    <p className="card-text">Caio</p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className='btn-group'>
-                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("caio", '+')} disabled={caio?.treinos >= diasNoMes}>+1</button>
-                        <button className='btn btn-outline-secondary' onClick={() => treinar("caio", '-')} disabled={caio?.treinos <= 0}>-1</button>
+              {
+                participantes.map((p) => {
+                  return (
+                    <div className="col" key={p.id}>
+                      <div className="card shadow-sm">
+                        <img src={`/src/assets/${p.nome}.jpg`} alt={p.nome} className="card-img-top object-fit-cover" />
+                        <div className="card-body">
+                          <p className="card-text">{p.nome}</p>
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className='btn-group'>
+                              <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar(p.id, '+')} disabled={p?.treinos >= diasNoMes}>+1</button>
+                              <button className='btn btn-outline-secondary' onClick={() => treinar(p.id, '-')} disabled={p?.treinos <= 0}>-1</button>
+                            </div>
+                            <p className="text-body-secondary">{p?.dataTreino
+                              ? new Date(p.dataTreino.seconds * 1000).toLocaleString()
+                              : ""}</p> {/**Aqui você pode colocar a hora e dia que ele apertou */}
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-body-secondary">{caio?.dataTreino
-                        ? new Date(caio.dataTreino.seconds * 1000).toLocaleString()
-                        : ""}</p> {/**Aqui você pode colocar a hora e dia que ele apertou */}
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col">
-                <div className="card shadow-sm">
-                  <img src={maiteImg} alt="Caio" className="card-img-top object-fit-cover" />
-                  <div className="card-body">
-                    <p className="card-text">Maitê</p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className='btn-group'>
-                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("maitê", '+')} disabled={maite?.treinos >= diasNoMes}>+1</button>
-                        <button className='btn btn-outline-secondary' onClick={() => treinar("maitê", '-')} disabled={maite?.treinos <= 0}>-1</button>
-                      </div>
-                      <p className="text-body-secondary">{maite?.dataTreino
-                        ? new Date(maite.dataTreino.seconds * 1000).toLocaleString()
-                        : ""}</p>                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col">
-                <div className="card shadow-sm">
-                  <img src={yalueImg} alt="Caio" className="card-img-top object-fit-cover" />
-                  <div className="card-body">
-                    <p className="card-text">Yaluê</p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className='btn-group'>
-                        <button className='btn btn-primary d-inline-flex align-items-center' onClick={() => treinar("yaluê", '+')} disabled={yalue?.treinos >= diasNoMes}>+1</button>
-                        <button className='btn btn-outline-secondary' onClick={() => treinar("yaluê", '-')} disabled={yalue?.treinos <= 0}>-1</button>
-                      </div>
-                      <p className="text-body-secondary">{yalue?.dataTreino
-                        ? new Date(yalue.dataTreino.seconds * 1000).toLocaleString()
-                        : ""}</p>                    </div>
-                  </div>
-                </div>
-              </div>
+                  )
+                })
+              }
+
+
             </div>
           </div>
         </div>
